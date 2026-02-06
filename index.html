@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10 DNÍ STREAMU - ODPOČET</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #00ff00;
+            font-family: 'Press Start 2P', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 20px;
+            max-width: 100%;
+        }
+        
+        .title {
+            font-size: clamp(16px, 4vw, 32px);
+            margin-bottom: 40px;
+            text-shadow: 0 0 20px #00ff00;
+            animation: glow-green 2s ease-in-out infinite alternate;
+            line-height: 1.5;
+        }
+        
+        .status {
+            font-size: clamp(12px, 3vw, 20px);
+            margin-bottom: 30px;
+            color: #00ffff;
+            text-shadow: 0 0 15px #00ffff;
+        }
+        
+        .day-counter {
+            font-size: clamp(14px, 3.5vw, 24px);
+            margin-bottom: 40px;
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+        }
+        
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: clamp(10px, 3vw, 30px);
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        
+        .time-unit {
+            background: #1a1a1a;
+            border: 4px solid #00ff00;
+            padding: clamp(15px, 3vw, 30px);
+            min-width: clamp(80px, 15vw, 150px);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            transition: all 0.5s ease;
+        }
+        
+        .time-unit.red-phase {
+            border-color: #ff0000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+        }
+        
+        .time-value {
+            font-size: clamp(24px, 8vw, 72px);
+            display: block;
+            margin-bottom: 15px;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            transition: all 0.5s ease;
+        }
+        
+        .time-value.red-phase {
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        
+        .time-label {
+            font-size: clamp(8px, 2vw, 16px);
+            color: #00ffff;
+            display: block;
+        }
+        
+        .info {
+            font-size: clamp(10px, 2.5vw, 16px);
+            color: #888;
+            margin-top: 40px;
+            line-height: 1.8;
+        }
+        
+        @keyframes glow-green {
+            from {
+                text-shadow: 0 0 20px #00ff00;
+            }
+            to {
+                text-shadow: 0 0 40px #00ff00, 0 0 60px #00ff00;
+            }
+        }
+        
+        @keyframes glow-red {
+            from {
+                text-shadow: 0 0 20px #ff0000;
+            }
+            to {
+                text-shadow: 0 0 40px #ff0000, 0 0 60px #ff0000;
+            }
+        }
+        
+        .title.red-phase {
+            animation: glow-red 2s ease-in-out infinite alternate;
+        }
+        
+        .completed {
+            color: #ff0000;
+            text-shadow: 0 0 30px #ff0000;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title" id="title">10 DNÍ STREAMU</div>
+        <div class="status" id="status">PŘÍPRAVA...</div>
+        <div class="day-counter" id="dayCounter"></div>
+        
+        <div class="countdown" id="countdown">
+            <div class="time-unit" id="daysUnit">
+                <span class="time-value" id="days">00</span>
+                <span class="time-label">DNY</span>
+            </div>
+            <div class="time-unit" id="hoursUnit">
+                <span class="time-value" id="hours">00</span>
+                <span class="time-label">HODINY</span>
+            </div>
+            <div class="time-unit" id="minutesUnit">
+                <span class="time-value" id="minutes">00</span>
+                <span class="time-label">MINUTY</span>
+            </div>
+            <div class="time-unit" id="secondsUnit">
+                <span class="time-value" id="seconds">00</span>
+                <span class="time-label">SEKUNDY</span>
+            </div>
+        </div>
+        
+        <div class="info" id="info">
+            START: 9. 2. 2025 | 14:00<br>
+            DÉLKA: 240 HODIN
+        </div>
+    </div>
+
+    <script>
+        // Pevné datum startu: 9. února 2025, 14:00
+        const startDate = new Date('2025-02-09T14:00:00');
+        
+        // Kontrola, že je to skutečně pondělí
+        if (startDate.getDay() !== 1) {
+            console.warn('VAROVÁNÍ: 9. 2. 2025 není pondělí!');
+        }
+        
+        // Délka streamu: 10 dní = 240 hodin
+        const streamDurationMs = 10 * 24 * 60 * 60 * 1000;
+        const endDate = new Date(startDate.getTime() + streamDurationMs);
+        
+        // Polovina = 5 dní
+        const halfwayPoint = new Date(startDate.getTime() + (streamDurationMs / 2));
+        
+        function updateCountdown() {
+            const now = new Date();
+            const timeToStart = startDate - now;
+            const timeToEnd = endDate - now;
+            
+            const statusEl = document.getElementById('status');
+            const dayCounterEl = document.getElementById('dayCounter');
+            const titleEl = document.getElementById('title');
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+            
+            // Elementy pro změnu barvy
+            const timeUnits = document.querySelectorAll('.time-unit');
+            const timeValues = document.querySelectorAll('.time-value');
+            
+            let timeRemaining;
+            
+            if (timeToStart > 0) {
+                // Před startem - zelená
+                statusEl.textContent = 'PŘÍPRAVA';
+                statusEl.className = 'status';
+                dayCounterEl.textContent = '';
+                timeRemaining = timeToStart;
+                
+                // Zelená fáze
+                titleEl.classList.remove('red-phase');
+                timeUnits.forEach(unit => unit.classList.remove('red-phase'));
+                timeValues.forEach(value => value.classList.remove('red-phase'));
+                
+            } else if (timeToEnd > 0) {
+                // Stream běží
+                statusEl.textContent = 'STREAM BĚŽÍ';
+                statusEl.className = 'status';
+                
+                // Vypočítej, kolikátý den streamu právě je
+                const elapsedMs = now - startDate;
+                const currentDay = Math.floor(elapsedMs / (24 * 60 * 60 * 1000)) + 1;
+                dayCounterEl.textContent = `DEN ${currentDay}/10`;
+                
+                timeRemaining = timeToEnd;
+                
+                // Změna barvy po 5 dnech (po půlce)
+                if (now >= halfwayPoint) {
+                    // ČERVENÁ FÁZE (den 6-10)
+                    titleEl.classList.add('red-phase');
+                    timeUnits.forEach(unit => unit.classList.add('red-phase'));
+                    timeValues.forEach(value => value.classList.add('red-phase'));
+                } else {
+                    // ZELENÁ FÁZE (den 1-5)
+                    titleEl.classList.remove('red-phase');
+                    timeUnits.forEach(unit => unit.classList.remove('red-phase'));
+                    timeValues.forEach(value => value.classList.remove('red-phase'));
+                }
+                
+            } else {
+                // Stream skončil
+                statusEl.textContent = 'DOKONČENO!';
+                statusEl.className = 'status completed';
+                dayCounterEl.textContent = 'STREAM UKONČEN';
+                daysEl.textContent = '00';
+                hoursEl.textContent = '00';
+                minutesEl.textContent = '00';
+                secondsEl.textContent = '00';
+                return;
+            }
+            
+            // Výpočet zbývajícího času
+            const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+            
+            // Zobrazení s nulami na začátku
+            daysEl.textContent = String(days).padStart(2, '0');
+            hoursEl.textContent = String(hours).padStart(2, '0');
+            minutesEl.textContent = String(minutes).padStart(2, '0');
+            secondsEl.textContent = String(seconds).padStart(2, '0');
+        }
+        
+        // Update každou sekundu
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
