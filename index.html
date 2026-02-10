@@ -118,21 +118,13 @@
         }
         
         @keyframes glow-green {
-            from {
-                text-shadow: 0 0 20px #00ff00;
-            }
-            to {
-                text-shadow: 0 0 40px #00ff00, 0 0 60px #00ff00;
-            }
+            from { text-shadow: 0 0 20px #00ff00; }
+            to { text-shadow: 0 0 40px #00ff00, 0 0 60px #00ff00; }
         }
         
         @keyframes glow-red {
-            from {
-                text-shadow: 0 0 20px #ff0000;
-            }
-            to {
-                text-shadow: 0 0 40px #ff0000, 0 0 60px #ff0000;
-            }
+            from { text-shadow: 0 0 20px #ff0000; }
+            to { text-shadow: 0 0 40px #ff0000, 0 0 60px #ff0000; }
         }
         
         .title.red-phase {
@@ -187,19 +179,9 @@
     </div>
 
     <script>
-        // Pevné datum startu: 9. února 2026, 14:00
         const startDate = new Date('2026-02-09T14:00:00');
-        
-        // Kontrola, že je to skutečně pondělí
-        if (startDate.getDay() !== 1) {
-            console.warn('VAROVÁNÍ: 9. 2. 2026 není pondělí!');
-        }
-        
-        // Délka streamu: 10 dní = 240 hodin
         const streamDurationMs = 10 * 24 * 60 * 60 * 1000;
         const endDate = new Date(startDate.getTime() + streamDurationMs);
-        
-        // Polovina = 5 dní
         const halfwayPoint = new Date(startDate.getTime() + (streamDurationMs / 2));
         
         function updateCountdown() {
@@ -214,52 +196,45 @@
             const hoursEl = document.getElementById('hours');
             const minutesEl = document.getElementById('minutes');
             const secondsEl = document.getElementById('seconds');
-            
-            // Elementy pro změnu barvy
             const timeUnits = document.querySelectorAll('.time-unit');
             const timeValues = document.querySelectorAll('.time-value');
             
             let timeRemaining;
             
             if (timeToStart > 0) {
-                // Před startem - zelená
                 statusEl.textContent = 'PŘÍPRAVA';
                 statusEl.className = 'status';
                 dayCounterEl.textContent = '';
                 timeRemaining = timeToStart;
-                
-                // Zelená fáze
                 titleEl.classList.remove('red-phase');
                 timeUnits.forEach(unit => unit.classList.remove('red-phase'));
                 timeValues.forEach(value => value.classList.remove('red-phase'));
                 
             } else if (timeToEnd > 0) {
-                // Stream běží
                 statusEl.textContent = 'STREAM BĚŽÍ';
                 statusEl.className = 'status';
                 
-                // Vypočítej, kolikátý den streamu právě je
-                const elapsedMs = now - startDate;
-                const currentDay = Math.floor(elapsedMs / (24 * 60 * 60 * 1000)) + 1;
+                // Den se mění o půlnoci
+                const startDay = new Date(startDate);
+                startDay.setHours(0, 0, 0, 0);
+                const today = new Date(now);
+                today.setHours(0, 0, 0, 0);
+                const currentDay = Math.floor((today - startDay) / (24 * 60 * 60 * 1000)) + 1;
                 dayCounterEl.textContent = `DEN ${currentDay}/10`;
                 
                 timeRemaining = timeToEnd;
                 
-                // Změna barvy po 5 dnech (po půlce)
                 if (now >= halfwayPoint) {
-                    // ČERVENÁ FÁZE (den 6-10)
                     titleEl.classList.add('red-phase');
                     timeUnits.forEach(unit => unit.classList.add('red-phase'));
                     timeValues.forEach(value => value.classList.add('red-phase'));
                 } else {
-                    // ZELENÁ FÁZE (den 1-5)
                     titleEl.classList.remove('red-phase');
                     timeUnits.forEach(unit => unit.classList.remove('red-phase'));
                     timeValues.forEach(value => value.classList.remove('red-phase'));
                 }
                 
             } else {
-                // Stream skončil
                 statusEl.textContent = 'DOKONČENO!';
                 statusEl.className = 'status completed';
                 dayCounterEl.textContent = 'STREAM UKONČEN';
@@ -270,20 +245,17 @@
                 return;
             }
             
-            // Výpočet zbývajícího času
             const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
             const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
             
-            // Zobrazení s nulami na začátku
             daysEl.textContent = String(days).padStart(2, '0');
             hoursEl.textContent = String(hours).padStart(2, '0');
             minutesEl.textContent = String(minutes).padStart(2, '0');
             secondsEl.textContent = String(seconds).padStart(2, '0');
         }
         
-        // Update každou sekundu
         updateCountdown();
         setInterval(updateCountdown, 1000);
     </script>
