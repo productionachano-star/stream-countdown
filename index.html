@@ -214,13 +214,11 @@
                 statusEl.textContent = 'STREAM BĚŽÍ';
                 statusEl.className = 'status';
                 
-                // Den se mění o půlnoci, DEN 1 = 9.2. + 10.2., DEN 2 = 11.2. atd.
-                const startDay = new Date(startDate);
-                startDay.setHours(0, 0, 0, 0);
-                startDay.setDate(startDay.getDate() + 1);
-                const today = new Date(now);
-                today.setHours(0, 0, 0, 0);
-                const currentDay = Math.max(1, Math.floor((today - startDay) / (24 * 60 * 60 * 1000)) + 1);
+                // Den podle kalendářního data - mění se o půlnoci
+                const startMidnight = new Date('2026-02-09T00:00:00');
+                const todayMidnight = new Date(now);
+                todayMidnight.setHours(0, 0, 0, 0);
+                const currentDay = Math.floor((todayMidnight - startMidnight) / (24 * 60 * 60 * 1000)) + 1;
                 dayCounterEl.textContent = `DEN ${currentDay}/10`;
                 
                 timeRemaining = timeToEnd;
