@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream Tape #1 - ODPOČET</title>
+    <title>Stream Tape #1 - ALBUM RELEASE</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * {
@@ -32,6 +32,7 @@
         .title {
             font-size: clamp(16px, 4vw, 32px);
             margin-bottom: 40px;
+            color: #00ff00;
             text-shadow: 0 0 20px #00ff00;
             animation: glow-green 2s ease-in-out infinite alternate;
             line-height: 1.5;
@@ -99,6 +100,14 @@
             margin-top: 40px;
             line-height: 1.8;
         }
+
+        .release-message {
+            font-size: clamp(10px, 2.5vw, 16px);
+            color: #00ff00;
+            margin-top: 30px;
+            line-height: 1.8;
+            text-shadow: 0 0 10px #00ff00;
+        }
         
         .website-link {
             margin-top: 20px;
@@ -116,14 +125,6 @@
             color: #00ffff;
             text-shadow: 0 0 15px #00ffff;
         }
-
-        .streaming-logos {
-            display: flex;
-            justify-content: center;
-            gap: clamp(15px, 4vw, 25px);
-            margin-top: 25px;
-            align-items: center;
-        }
         
         @keyframes glow-green {
             from { text-shadow: 0 0 20px #00ff00; }
@@ -136,6 +137,7 @@
         }
         
         .title.red-phase {
+            color: #ff0000;
             animation: glow-red 2s ease-in-out infinite alternate;
         }
         
@@ -149,13 +151,17 @@
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0.3; }
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="title" id="title">Stream Tape #1</div>
-        <div class="status" id="status">PŘÍPRAVA...</div>
-        <div class="day-counter" id="dayCounter"></div>
+        <div class="status" id="status">ALBUM VYCHÁZÍ</div>
+        <div class="day-counter" id="dayCounter">RELEASE DAY STREAM</div>
         
         <div class="countdown" id="countdown">
             <div class="time-unit" id="daysUnit">
@@ -175,51 +181,32 @@
                 <span class="time-label">SEKUNDY</span>
             </div>
         </div>
+
+        <div class="release-message hidden" id="releaseMessage">
+            Album je online na všech digitálních platformách.
+        </div>
         
         <div class="info" id="info">
-            START: PONDĚLÍ 9. 2. 2026 | 14:00<br>
-            DÉLKA: 240 HODIN
+            RELEASE: 20. 2. 2026 | 00:00
         </div>
         
         <div class="website-link">
             <a href="https://www.achano.cz" target="_blank">www.achano.cz</a>
         </div>
-
-        <div class="streaming-logos">
-            <!-- Spotify -->
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="11" fill="#1DB954"/>
-                <path d="M17.5 10.5c-3.5-2-9-2-11.5-1 M16.5 13c-3-1.5-7.5-1.5-10 0 M15 15.5c-2.5-1-6-1-8 0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-
-            <!-- YouTube -->
-            <svg width="40" height="32" viewBox="0 0 24 18" fill="none">
-                <path d="M23.5 4.7c-.3-1.1-1.1-1.9-2.2-2.2C19.4 2 12 2 12 2s-7.4 0-9.3.5C1.6 2.8.8 3.6.5 4.7 0 6.6 0 10.5 0 10.5s0 3.9.5 5.8c.3 1.1 1.1 1.9 2.2 2.2C4.6 19 12 19 12 19s7.4 0 9.3-.5c1.1-.3 1.9-1.1 2.2-2.2.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8z" fill="#FF0000"/>
-                <path d="M9.5 14.5l6.5-4-6.5-4v8z" fill="white"/>
-            </svg>
-
-            <!-- Tidal -->
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                <rect width="24" height="24" rx="4" fill="#000000"/>
-                <path d="M12 7l-3 3 3 3 3-3-3-3zm-6 6l3-3-3-3-3 3 3 3zm12 0l-3-3 3-3 3 3-3 3zm-6 0l-3 3 3 3 3-3-3-3z" fill="#00FFFF"/>
-            </svg>
-        </div>
     </div>
 
     <script>
-        const startDate = new Date('2026-02-09T14:00:00');
-        const streamDurationMs = 10 * 24 * 60 * 60 * 1000;
-        const endDate = new Date(startDate.getTime() + streamDurationMs);
-        const halfwayPoint = new Date(startDate.getTime() + (streamDurationMs / 2));
+        // Datum releasu: 20. února 2026, 00:00 (půlnoc)
+        const releaseDate = new Date('2026-02-20T00:00:00');
         
         function updateCountdown() {
             const now = new Date();
-            const timeToStart = startDate - now;
-            const timeToEnd = endDate - now;
+            const timeToRelease = releaseDate - now;
             
             const statusEl = document.getElementById('status');
             const dayCounterEl = document.getElementById('dayCounter');
             const titleEl = document.getElementById('title');
+            const releaseMessageEl = document.getElementById('releaseMessage');
             const daysEl = document.getElementById('days');
             const hoursEl = document.getElementById('hours');
             const minutesEl = document.getElementById('minutes');
@@ -227,62 +214,51 @@
             const timeUnits = document.querySelectorAll('.time-unit');
             const timeValues = document.querySelectorAll('.time-value');
             
-            let timeRemaining;
-            
-            if (timeToStart > 0) {
-                statusEl.textContent = 'PŘÍPRAVA';
+            if (timeToRelease > 0) {
+                // PŘED PŮLNOCÍ - odpočet běží (ZELENÝ)
+                statusEl.textContent = 'ALBUM VYCHÁZÍ';
                 statusEl.className = 'status';
-                dayCounterEl.textContent = '';
-                timeRemaining = timeToStart;
+                dayCounterEl.textContent = 'RELEASE DAY STREAM';
+                dayCounterEl.classList.remove('hidden');
+                releaseMessageEl.classList.add('hidden');
+                
+                // Zelená fáze
                 titleEl.classList.remove('red-phase');
                 timeUnits.forEach(unit => unit.classList.remove('red-phase'));
                 timeValues.forEach(value => value.classList.remove('red-phase'));
                 
-            } else if (timeToEnd > 0) {
-                statusEl.textContent = 'STREAM BĚŽÍ';
-                statusEl.className = 'status';
+                // Výpočet zbývajícího času
+                const days = Math.floor(timeToRelease / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeToRelease % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeToRelease % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeToRelease % (1000 * 60)) / 1000);
                 
-                // Den podle kalendářního data - mění se o půlnoci
-                const startMidnight = new Date('2026-02-09T00:00:00');
-                const todayMidnight = new Date(now);
-                todayMidnight.setHours(0, 0, 0, 0);
-                const currentDay = Math.floor((todayMidnight - startMidnight) / (24 * 60 * 60 * 1000)) + 1;
-                dayCounterEl.textContent = `DEN ${currentDay}/10`;
-                
-                timeRemaining = timeToEnd;
-                
-                if (now >= halfwayPoint) {
-                    titleEl.classList.add('red-phase');
-                    timeUnits.forEach(unit => unit.classList.add('red-phase'));
-                    timeValues.forEach(value => value.classList.add('red-phase'));
-                } else {
-                    titleEl.classList.remove('red-phase');
-                    timeUnits.forEach(unit => unit.classList.remove('red-phase'));
-                    timeValues.forEach(value => value.classList.remove('red-phase'));
-                }
+                daysEl.textContent = String(days).padStart(2, '0');
+                hoursEl.textContent = String(hours).padStart(2, '0');
+                minutesEl.textContent = String(minutes).padStart(2, '0');
+                secondsEl.textContent = String(seconds).padStart(2, '0');
                 
             } else {
+                // PO PŮLNOCI - album je venku (ČERVENÝ)
                 statusEl.textContent = 'DOKONČENO!';
                 statusEl.className = 'status completed';
-                dayCounterEl.textContent = 'STREAM UKONČEN';
+                dayCounterEl.classList.add('hidden'); // "RELEASE DAY STREAM" zmizí
+                releaseMessageEl.classList.remove('hidden'); // Zobrazí se zpráva o albu
+                
+                // Červená fáze
+                titleEl.classList.add('red-phase');
+                timeUnits.forEach(unit => unit.classList.add('red-phase'));
+                timeValues.forEach(value => value.classList.add('red-phase'));
+                
+                // Všechny hodnoty na 00
                 daysEl.textContent = '00';
                 hoursEl.textContent = '00';
                 minutesEl.textContent = '00';
                 secondsEl.textContent = '00';
-                return;
             }
-            
-            const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-            
-            daysEl.textContent = String(days).padStart(2, '0');
-            hoursEl.textContent = String(hours).padStart(2, '0');
-            minutesEl.textContent = String(minutes).padStart(2, '0');
-            secondsEl.textContent = String(seconds).padStart(2, '0');
         }
         
+        // Update každou sekundu
         updateCountdown();
         setInterval(updateCountdown, 1000);
     </script>
